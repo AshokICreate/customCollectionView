@@ -10,36 +10,67 @@ import UIKit
 
 class customCell: UICollectionViewCell {
     
-    var circleView: UIView!
-    var indexLabel: UILabel!
+    var circleView: UIView?
+    var thumbNailView : UIImageView?
+    
+    var indexLabel: UILabel?
     var textLabel: UILabel!
+    
+    func iPadDisplay() {
+        
+        thumbNailView = UIImageView(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width*2/3, height: frame.height*2/3))
+        thumbNailView!.layer.cornerRadius = 12.0
+        thumbNailView!.center.x = contentView.center.x
+        thumbNailView!.layer.borderWidth = 0.5
+        thumbNailView!.layer.borderColor = UIColor.black.cgColor
+        thumbNailView!.backgroundColor = UIColor.white
+        thumbNailView!.contentMode = UIViewContentMode.scaleAspectFit
+        contentView.addSubview(thumbNailView!)
+        
+        textLabel = UILabel(frame: CGRect(x: 0, y: thumbNailView!.frame.origin.y + thumbNailView!.frame.size.height, width: frame.size.width, height: frame.size.height/3 - thumbNailView!.frame.origin.y))
+        textLabel.font = UIFont.systemFont(ofSize: 20.0)
+        textLabel.textAlignment = .center
+        contentView.addSubview(textLabel)
+    }
+    
+    func iPhoneDisplay() {
+        
+        circleView = UIView(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width*2/3, height: frame.height*2/3))
+        circleView!.layer.cornerRadius = circleView!.frame.size.width/2.0
+        circleView!.center.x = contentView.center.x
+        circleView!.layer.borderWidth = 2.0
+        circleView!.layer.borderColor = UIColor.black.cgColor
+        circleView!.backgroundColor = UIColor.white
+        circleView!.contentMode = UIViewContentMode.scaleAspectFit
+        contentView.addSubview(circleView!)
+        
+        indexLabel = UILabel(frame: CGRect.zero)
+        indexLabel!.frame.size.width = circleView!.frame.width
+        indexLabel!.frame.size.height = circleView!.frame.height/3.0
+        indexLabel!.center.x = circleView!.frame.size.width/2.0
+        indexLabel!.center.y = circleView!.frame.size.height/2.0
+        indexLabel!.textAlignment = .center
+        circleView!.addSubview(indexLabel!)
+        
+        
+        textLabel = UILabel(frame: CGRect(x: 0, y: circleView!.frame.origin.y + circleView!.frame.size.height, width: frame.size.width, height: frame.size.height/3 - circleView!.frame.origin.y))
+        textLabel.font = UIFont.systemFont(ofSize: UIFont.smallSystemFontSize)
+        textLabel.textAlignment = .center
+        contentView.addSubview(textLabel)
+
+        
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        circleView = UIImageView(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width*2/3, height: frame.height*2/3))
-        circleView.layer.cornerRadius = circleView.frame.size.width/2.0
-        circleView.center.x = contentView.center.x
-        circleView.layer.borderWidth = 2.0
-        circleView.layer.borderColor = UIColor.black.cgColor
-        circleView.backgroundColor = UIColor.white
-        circleView.contentMode = UIViewContentMode.scaleAspectFit
-        contentView.addSubview(circleView)
-        
-        indexLabel = UILabel(frame: CGRect.zero)
-        indexLabel.frame.size.width = circleView.frame.width
-        indexLabel.frame.size.height = circleView.frame.height/3.0
-        indexLabel.center.x = circleView.frame.size.width/2.0
-        indexLabel.center.y = circleView.frame.size.height/2.0
-        indexLabel.textAlignment = .center
-        circleView.addSubview(indexLabel)
-        
-        
-        textLabel = UILabel(frame: CGRect(x: 0, y: circleView.frame.size.height + 4.0, width: frame.size.width, height: frame.size.height/3))
-        textLabel.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
-        textLabel.textAlignment = .center
-        contentView.addSubview(textLabel)
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            iPhoneDisplay()
+        } else {
+            iPadDisplay()
+        }
     }
+    
     
     /*
      This initializer is called from a storyboard or a xib file. That’s not our case, but we still need to provide init(coder:).
@@ -77,7 +108,6 @@ class ViewController: UIViewController {
         collectionView.layer.shadowOffset = CGSize(width: -1.0, height: -1.0)
         collectionView.layer.shadowRadius = 1.0
         collectionView.backgroundColor = UIColor.white
-        
         self.view .addSubview(collectionView)
     }
     
@@ -91,28 +121,42 @@ class ViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
-        if UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation) {
-            collectionViewHeight = CGFloat(self.view.frame.size.width * 16.0 ) / 100.0
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            
+            if UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation) {
+                collectionViewHeight = CGFloat(self.view.frame.size.width * 16.0 ) / 100.0
+            } else {
+                collectionViewHeight = CGFloat(self.view.frame.size.width * 30.0 ) / 100.0
+            }
+            
         } else {
-            collectionViewHeight = CGFloat(self.view.frame.size.width * 30.0 ) / 100.0
+            
+            if UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation) {
+                collectionViewHeight = CGFloat(self.view.frame.size.width * 20.0 ) / 100.0
+            } else {
+                collectionViewHeight = CGFloat(self.view.frame.size.width * 28.0 ) / 100.0
+            }
+            
         }
         
         collectionView.frame.origin.y = self.view.frame.size.height
+        collectionViewHeight = collectionViewHeight - 20.0
         
         UIView.animate(withDuration: 1.0) { 
             self.collectionView.frame = CGRect(x: 0, y: self.view.frame.height - self.collectionViewHeight, width: self.view.frame.width, height: self.collectionViewHeight)
         }
-        collectionView.collectionViewLayout.invalidateLayout()
         
+        collectionView.collectionViewLayout.invalidateLayout()
+        self.view.setNeedsDisplay()
     }
     
-    /*
-     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-     super.viewWillTransition(to: size, with: coordinator)
-     collectionView.collectionViewLayout.invalidateLayout()
-     self.view.setNeedsDisplay()
-     }
-     */
+    
+//     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+//     super.viewWillTransition(to: size, with: coordinator)
+//        
+//     
+//     }
+ 
     
     
     @IBAction func showCollectionView(_ sender: UIButton) {
@@ -148,13 +192,21 @@ extension ViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! customCell
         
         cell.backgroundColor = UIColor.white
-        
         cell.textLabel.text = "Text"
         
-        cell.circleView.backgroundColor = UIColor.white
+        //For .phone
+        if let tempCircleView = cell.circleView {
+            tempCircleView.backgroundColor = UIColor.white
+        }
+        if let tempLabel = cell.indexLabel {
+            tempLabel.text = String(indexPath.row)
+            tempLabel.textColor = UIColor.black
+        }
         
-        cell.indexLabel.text = String(indexPath.row)
-        cell.indexLabel.textColor = UIColor.black
+        //For .pad
+        if let tempThumbNailView = cell.thumbNailView {
+            tempThumbNailView.image = UIImage(named: "star")
+        }
         
         return cell
     }
@@ -167,27 +219,50 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let cell = collectionView.cellForItem(at: indexPath) as? customCell
-        cell?.circleView.backgroundColor = UIColor.black
-        cell?.indexLabel.textColor = UIColor.white
-        
+    
+        //For .phone
+        if let tempCircleView = cell?.circleView {
+            tempCircleView.backgroundColor = UIColor.black
+        }
+        if let tempIndexLabel = cell?.indexLabel {
+                tempIndexLabel.textColor = UIColor.white
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         
         let cell = collectionView.cellForItem(at: indexPath) as? customCell
-        cell?.circleView.backgroundColor = UIColor.white
-        cell?.indexLabel.textColor = UIColor.black
+        
+        //For .phone
+        if let tempCircleView = cell?.circleView {
+            tempCircleView.backgroundColor = UIColor.white
+        }
+        if let tempIndexLabel = cell?.indexLabel {
+            tempIndexLabel.textColor = UIColor.black
+        }
         
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionViewHeight - 12, height: collectionViewHeight - 12)
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            return CGSize(width: collectionViewHeight - 12, height: collectionViewHeight - 12)
+        } else {
+            return CGSize(width: collectionViewHeight - 20, height: collectionViewHeight - 20)
+        }
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: 8.0, bottom: 0, right: 8.0)
+        return UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        
+        //uncomment below line whenerver for minimumLineSpaceing
+        //return 12.0
+        
+        return 0.0
+    }
 }
 
 
