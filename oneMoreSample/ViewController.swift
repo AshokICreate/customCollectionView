@@ -57,7 +57,7 @@ class customCell: UICollectionViewCell {
         textLabel.font = UIFont.systemFont(ofSize: UIFont.smallSystemFontSize)
         textLabel.textAlignment = .center
         contentView.addSubview(textLabel)
-
+        
         
     }
     
@@ -84,9 +84,14 @@ class customCell: UICollectionViewCell {
 
 class ViewController: UIViewController {
     
+    var canvasView: UIView! = nil
     var collectionView: UICollectionView! = nil
+    var toggleButton: UIButton! = nil
+    
     var identifier: String = "Cell"
+    var canvasViewHeight: CGFloat = CGFloat()
     var collectionViewHeight: CGFloat = CGFloat()
+    var isCanvasViewHidden: Bool = Bool()
     
     override func viewDidLoad() {
         
@@ -97,6 +102,24 @@ class ViewController: UIViewController {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         
+        isCanvasViewHidden = false
+        
+        toggleButton = UIButton(frame: CGRect.zero)
+        toggleButton.backgroundColor = UIColor.white
+        toggleButton.imageView?.contentMode = .scaleAspectFit
+        toggleButton.setImage(UIImage(named: "downArrow"), for: .normal)
+        toggleButton.addTarget(self, action: #selector(ViewController.showOrHideCanvasView(sender:)), for: .touchUpInside)
+        toggleButton.isUserInteractionEnabled = true
+        
+        canvasView = UIView(frame: CGRect.zero)
+        
+        toggleButton.layer.masksToBounds = false
+        toggleButton.layer.shadowColor = UIColor.black.cgColor
+        toggleButton.layer.shadowOpacity = 2.0
+        toggleButton.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        toggleButton.layer.shadowRadius = 1.0
+        toggleButton.backgroundColor = UIColor.white
+        
         collectionView = UICollectionView(frame: collectionViewFrameSize, collectionViewLayout: layout)
         collectionView.register(customCell.self, forCellWithReuseIdentifier: identifier)
         collectionView.delegate = self
@@ -104,11 +127,16 @@ class ViewController: UIViewController {
         
         collectionView.layer.masksToBounds = false
         collectionView.layer.shadowColor = UIColor.black.cgColor
-        collectionView.layer.shadowOpacity = 0.5
+        collectionView.layer.shadowOpacity = 0.2
         collectionView.layer.shadowOffset = CGSize(width: -1.0, height: -1.0)
         collectionView.layer.shadowRadius = 1.0
         collectionView.backgroundColor = UIColor.white
-        self.view .addSubview(collectionView)
+        
+        canvasView.addSubview(toggleButton)
+        
+        canvasView.addSubview(collectionView)
+        self.view .addSubview(canvasView)
+        
     }
     
     
@@ -124,51 +152,87 @@ class ViewController: UIViewController {
         if UIDevice.current.userInterfaceIdiom == .phone {
             
             if UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation) {
-                collectionViewHeight = CGFloat(self.view.frame.size.width * 16.0 ) / 100.0
+                canvasViewHeight = CGFloat(self.view.frame.size.width * 16.0 ) / 100.0
             } else {
-                collectionViewHeight = CGFloat(self.view.frame.size.width * 30.0 ) / 100.0
+                canvasViewHeight = CGFloat(self.view.frame.size.width * 30.0 ) / 100.0
             }
             
         } else {
             
             if UIInterfaceOrientationIsLandscape(UIApplication.shared.statusBarOrientation) {
-                collectionViewHeight = CGFloat(self.view.frame.size.width * 20.0 ) / 100.0
+                canvasViewHeight = CGFloat(self.view.frame.size.width * 20.0 ) / 100.0
             } else {
-                collectionViewHeight = CGFloat(self.view.frame.size.width * 28.0 ) / 100.0
+                canvasViewHeight = CGFloat(self.view.frame.size.width * 28.0 ) / 100.0
             }
             
         }
         
-        collectionView.frame.origin.y = self.view.frame.size.height
-        collectionViewHeight = collectionViewHeight - 20.0
+        canvasView.frame.origin.y = self.view.frame.size.height
         
-        UIView.animate(withDuration: 1.0) { 
-            self.collectionView.frame = CGRect(x: 0, y: self.view.frame.height - self.collectionViewHeight, width: self.view.frame.width, height: self.collectionViewHeight)
+        UIView.animate(withDuration: 1.0) {
+            self.canvasView.frame = CGRect(x: 0, y: self.view.frame.height - self.canvasViewHeight, width: self.view.frame.size.width, height: self.canvasViewHeight)
         }
+    
+        
+        toggleButton.frame.size = CGSize(width: 100, height: 35)
+        toggleButton.center.x = self.canvasView.center.x
+        toggleButton.backgroundColor = UIColor.white
+        toggleButton.frame.origin.y = 0
+        
+        let toggleButtonPath = UIBezierPath()
+        toggleButtonPath.move(to: CGPoint(x: 0.0, y: toggleButton.frame.size.height))
+        toggleButtonPath.addLine(to: CGPoint(x: 0.0, y: 0.0))
+        toggleButtonPath.addLine(to: CGPoint(x: toggleButton.frame.size.width, y: 0.0))
+        toggleButtonPath.addLine(to: CGPoint(x: toggleButton.frame.size.width, y: toggleButton.frame.size.height))
+        toggleButtonPath.close()
+        toggleButton.layer.shadowPath = toggleButtonPath.cgPath
+        
+        self.collectionViewHeight = self.canvasViewHeight - self.toggleButton.frame.size.height
+        
+        self.collectionView.frame = CGRect(x: 0, y: self.toggleButton.frame.size.height, width: self.canvasView.frame.width, height: self.canvasView.frame.size.height - self.toggleButton.frame.size.height)
         
         collectionView.collectionViewLayout.invalidateLayout()
         self.view.setNeedsDisplay()
     }
     
     
-//     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//     super.viewWillTransition(to: size, with: coordinator)
-//        
-//     
-//     }
- 
+    //     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    //     super.viewWillTransition(to: size, with: coordinator)
+    //
+    //
+    //     }
+    
+    func showOrHideCanvasView(sender: UIButton) {
+        
+        if isCanvasViewHidden {
+            UIView.animate(withDuration: 1.0) {
+                self.toggleButton.setImage(UIImage(named: "downArrow"), for: .normal)
+                self.canvasView.frame = CGRect(x: 0, y: self.view.frame.height - self.canvasView.frame.size.height, width: self.view.frame.width, height: self.self.canvasView.frame.size.height)
+                self.isCanvasViewHidden = false
+            }
+        } else {
+            UIView.animate(withDuration: 1.0) {
+                self.toggleButton.setImage(UIImage(named: "upArrow"), for: .normal)
+                self.canvasView.frame = CGRect(x: 0, y: self.view.frame.size.height - self.toggleButton.frame.size.height, width: self.view.frame.size.width, height: self.canvasViewHeight)
+                self.isCanvasViewHidden = true
+            }
+
+        }
+        
+    }
+    
     
     
     @IBAction func showCollectionView(_ sender: UIButton) {
         UIView.animate(withDuration: 1.0) {
-            self.collectionView.frame = CGRect(x: 0, y: self.view.frame.height - self.collectionViewHeight, width: self.view.frame.width, height: self.collectionViewHeight)
+            self.canvasView.frame = CGRect(x: 0, y: self.view.frame.height - self.canvasView.frame.size.height, width: self.view.frame.width, height: self.self.canvasView.frame.size.height)
         }
     }
     
     
     @IBAction func hideCollectionView(_ sender: UIButton) {
         UIView.animate(withDuration: 1.0) {
-            self.collectionView.frame = CGRect(x: 0, y: self.view.frame.height, width: self.view.frame.width, height: self.collectionViewHeight)
+            self.canvasView.frame = CGRect(x: 0, y: self.view.frame.size.height - self.toggleButton.frame.size.height, width: self.view.frame.size.width, height: self.canvasViewHeight)
         }
     }
     
@@ -185,7 +249,7 @@ extension ViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 8
+        return 28
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -219,13 +283,13 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let cell = collectionView.cellForItem(at: indexPath) as? customCell
-    
+        
         //For .phone
         if let tempCircleView = cell?.circleView {
             tempCircleView.backgroundColor = UIColor.black
         }
         if let tempIndexLabel = cell?.indexLabel {
-                tempIndexLabel.textColor = UIColor.white
+            tempIndexLabel.textColor = UIColor.white
         }
     }
     
@@ -249,7 +313,6 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
         } else {
             return CGSize(width: collectionViewHeight - 20, height: collectionViewHeight - 20)
         }
-        
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {

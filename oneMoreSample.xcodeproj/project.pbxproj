@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F9279D3B1DAE92360092A16E /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9279D3A1DAE92360092A16E /* RootViewController.swift */; };
 		F92FE1901DA7CE5000A12827 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92FE18F1DA7CE5000A12827 /* AppDelegate.swift */; };
 		F92FE1921DA7CE5000A12827 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92FE1911DA7CE5000A12827 /* ViewController.swift */; };
 		F92FE1951DA7CE5000A12827 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F92FE1931DA7CE5000A12827 /* Main.storyboard */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F9279D3A1DAE92360092A16E /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
 		F92FE18C1DA7CE5000A12827 /* oneMoreSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = oneMoreSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F92FE18F1DA7CE5000A12827 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F92FE1911DA7CE5000A12827 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -58,6 +60,7 @@
 			children = (
 				F92FE18F1DA7CE5000A12827 /* AppDelegate.swift */,
 				F92FE1911DA7CE5000A12827 /* ViewController.swift */,
+				F9279D3A1DAE92360092A16E /* RootViewController.swift */,
 				F92FE1931DA7CE5000A12827 /* Main.storyboard */,
 				F92FE1991DA7CE5000A12827 /* Assets.xcassets */,
 				F92FE19B1DA7CE5000A12827 /* LaunchScreen.storyboard */,
@@ -142,6 +145,7 @@
 			files = (
 				F92FE1921DA7CE5000A12827 /* ViewController.swift in Sources */,
 				F92FE1901DA7CE5000A12827 /* AppDelegate.swift in Sources */,
+				F9279D3B1DAE92360092A16E /* RootViewController.swift in Sources */,
 				F92FE1981DA7CE5000A12827 /* oneMoreSample.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
